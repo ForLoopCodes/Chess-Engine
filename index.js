@@ -1,12 +1,12 @@
 let board = [];
-board[0] = ["R", "N", "B", "Q", "K", "B", "N", "R"]; // rank 1
-board[1] = ["R", "B", "P", "P", "P", "R", "P", "R"];
+board[0] = ["P", "P", "B", "Q", "P", "B", "P", "P"]; // rank 1
+board[1] = ["P", "B", "P", "P", "P", "P", "P", "P"];
 board[2] = [" ", " ", " ", " ", " ", " ", " ", " "];
-board[3] = [" ", " ", " ", " ", "R", " ", " ", "R"];
+board[3] = [" ", " ", " ", " ", "P", " ", " ", "P"];
 board[4] = [" ", " ", " ", " ", " ", " ", " ", " "];
 board[5] = [" ", " ", " ", " ", " ", " ", " ", "b"];
-board[6] = ["p", "R", "p", "p", "p", "p", "B", "R"];
-board[7] = ["R", "R", "b", "q", "k", "b", "n", "R"]; // rank 8
+board[6] = ["p", "P", "p", "p", "p", "p", "B", "P"];
+board[7] = ["P", "P", "b", "q", "P", "b", "P", "P"]; // rank 8
 //  file     A    B    C    D    E    F    G    H
 
 // TODO: FUNCTIONS
@@ -82,7 +82,7 @@ const checkColorAtIndex = (row, col) => {
       return "black";
     }
   } catch (err) {
-    console.log("bad index");
+    console.log("error");
   }
 };
 
@@ -305,7 +305,7 @@ const possibilitesForBishop = (atPos) => {
   }
 
   return possibilityArray;
-};
+}; // <---------
 const possibilitesForQueen = (atPos) => {
   try {
     if (getPieceAtPos(atPos).toUpperCase() != "Q") {
@@ -417,16 +417,13 @@ const possibilitesForPawn = (atPos) => {
   atRow = getIndexOfRank(atPos[1]);
   atCol = getIndexOfFile(atPos[0].toUpperCase());
   try {
-    if (getPieceAtPos(atPos).toUpperCase() != "P") {
+    if (getPieceAtIndex(atRow, atCol).toUpperCase() != "P") {
       return "wrong piece!";
     }
   } catch (err) {
     return "bad index";
   }
 
-  if (getPieceAtPos(atPos).toUpperCase() != "P") {
-    return 0;
-  }
   // for double move
   if (
     checkColorAtPos(atPos) == "white" &&
@@ -448,27 +445,34 @@ const possibilitesForPawn = (atPos) => {
   }
   // for taking a piece
   if (checkColorAtPos(atPos) == "white") {
-    getPieceAtIndex(atRow + 1, atCol + 1) != " " &&
-      checkColorAtIndex(atRow + 1, atCol + 1) != "white" &&
-      possibilityArray.push(atRow + 1 + "" + (atCol + 1));
-
-    getPieceAtIndex(atRow + 1, atCol - 1) != " " &&
-      checkColorAtIndex(atRow + 1, atCol - 1) != "white" &&
-      possibilityArray.push(atRow + 1 + "" + (atCol - 1));
+    if (atRow < 7 && atCol < 7) {
+      getPieceAtIndex(atRow + 1, atCol + 1) != " " &&
+        checkColorAtIndex(atRow + 1, atCol + 1) != "white" &&
+        possibilityArray.push(atRow + 1 + "" + (atCol + 1));
+    }
+    if (atRow < 7 && atCol > 0) {
+      getPieceAtIndex(atRow + 1, atCol - 1) != " " &&
+        checkColorAtIndex(atRow + 1, atCol - 1) != "white" &&
+        possibilityArray.push(atRow + 1 + "" + (atCol - 1));
+    }
   }
   if (checkColorAtPos(atPos) == "black") {
-    getPieceAtIndex(atRow - 1, atCol + 1) != " " &&
-      checkColorAtIndex(atRow - 1, atCol + 1) != "black" &&
-      possibilityArray.push(atRow - 1 + "" + (atCol + 1));
-
-    getPieceAtIndex(atRow - 1, atCol - 1) != " " &&
-      checkColorAtIndex(atRow - 1, atCol - 1) != "black" &&
-      possibilityArray.push(atRow - 1 + "" + (atCol - 1));
+    if (atRow > 0 && atCol < 7) {
+      getPieceAtIndex(atRow - 1, atCol + 1) != " " &&
+        checkColorAtIndex(atRow - 1, atCol + 1) != "black" &&
+        possibilityArray.push(atRow - 1 + "" + (atCol + 1));
+    }
+    if (atRow > 0 && atCol > 0) {
+      getPieceAtIndex(atRow - 1, atCol - 1) != " " &&
+        checkColorAtIndex(atRow - 1, atCol - 1) != "black" &&
+        possibilityArray.push(atRow - 1 + "" + (atCol - 1));
+    }
   }
   // for moving 1 step forward
   if (
     checkColorAtPos(atPos) == "white" &&
     atRow != 1 &&
+    atRow != 7 &&
     getPieceAtIndex(atRow + 1, atCol) == " "
   ) {
     possibilityArray.push(atRow + 1 + "" + atCol);
@@ -477,6 +481,7 @@ const possibilitesForPawn = (atPos) => {
   if (
     checkColorAtPos(atPos) == "black" &&
     atRow != 6 &&
+    atRow != 0 &&
     getPieceAtIndex(atRow - 1, atCol) == " "
   ) {
     possibilityArray.push(atRow - 1 + "" + atCol);
@@ -533,7 +538,17 @@ const getPossibilitesAtIndex = (row, col) => {
 
   return getPossibilitesAtPos(atPos);
 };
-console.log(possibilitesForRook("h4"));
+console.log(possibilitesForPawn("a1"));
+console.log(possibilitesForPawn("a2"));
+console.log(possibilitesForPawn("b1"));
+console.log(possibilitesForPawn("a8"));
+console.log(possibilitesForPawn("b8"));
+console.log(possibilitesForPawn("b7"));
+console.log(possibilitesForPawn("f2"));
+console.log(possibilitesForPawn("h8"));
+console.log(possibilitesForPawn("h1"));
+console.log(possibilitesForPawn("h4"));
+console.log(possibilitesForPawn("e4"));
 
 // OUTPUT FUNCTIONS
 const showBoard = () => {
