@@ -1,12 +1,12 @@
 let board = [];
-board[0] = ["P", "P", "B", "Q", "P", "B", "P", "P"]; // rank 1
-board[1] = ["P", "B", "P", "P", "P", "P", "P", "P"];
+board[0] = ["R", "N", "B", "Q", "K", "B", "N", "R"]; // rank 1
+board[1] = ["P", "P", "P", "P", "P", "P", "P", "P"];
 board[2] = [" ", " ", " ", " ", " ", " ", " ", " "];
-board[3] = [" ", " ", " ", " ", "P", " ", " ", "P"];
-board[4] = [" ", " ", " ", " ", " ", " ", " ", " "];
-board[5] = [" ", " ", " ", " ", " ", " ", " ", "b"];
-board[6] = ["p", "P", "p", "p", "p", "p", "B", "P"];
-board[7] = ["P", "P", "b", "q", "P", "b", "P", "P"]; // rank 8
+board[3] = [" ", " ", " ", " ", " ", " ", " ", " "];
+board[4] = [" ", " ", " ", " ", " ", " ", " ", "B"];
+board[5] = [" ", " ", " ", " ", " ", " ", " ", " "];
+board[6] = ["p", "p", "p", "p", "p", "p", "p", "p"];
+board[7] = ["r", "n", "b", "q", "k", "b", "n", "r"]; // rank 8
 //  file     A    B    C    D    E    F    G    H
 
 // TODO: FUNCTIONS
@@ -84,6 +84,27 @@ const checkColorAtIndex = (row, col) => {
   } catch (err) {
     console.log("error");
   }
+};
+const indexToPos = (indexStr) => {
+  atPos =
+    indexStr[1] == 0
+      ? "A" + (parseInt(indexStr[0]) + 1)
+      : indexStr[1] == 1
+      ? "B" + (parseInt(indexStr[0]) + 1)
+      : indexStr[1] == 2
+      ? "C" + (parseInt(indexStr[0]) + 1)
+      : indexStr[1] == 3
+      ? "D" + (parseInt(indexStr[0]) + 1)
+      : indexStr[1] == 4
+      ? "E" + (parseInt(indexStr[0]) + 1)
+      : indexStr[1] == 5
+      ? "F" + (parseInt(indexStr[0]) + 1)
+      : indexStr[1] == 6
+      ? "G" + (parseInt(indexStr[0]) + 1)
+      : indexStr[1] == 7
+      ? "H" + (parseInt(indexStr[0]) + 1)
+      : Null;
+  return atPos;
 };
 
 // POSSIBILITIES FUNCTIONS:
@@ -168,7 +189,7 @@ const possibilitesForRook = (atPos) => {
       }
     }
   }
-  // check right
+  // check left
   if (atCol < 7) {
     checkingRowLeft = atRow;
     checkingColLeft = atCol + 1;
@@ -245,7 +266,7 @@ const possibilitesForBishop = (atPos) => {
         : 0;
       if (
         board[checkingRowDown][checkingColDown] == " " &&
-        !(checkingRowDown == 7 && checkingColDown == 7)
+        !(checkingRowDown == 7 || checkingColDown == 7)
       ) {
         checkingRowDown++;
         checkingColDown++;
@@ -269,7 +290,7 @@ const possibilitesForBishop = (atPos) => {
         : 0;
       if (
         board[checkingRowRight][checkingColRight] == " " &&
-        !(checkingColRight == 0 && checkingRowRight == 7)
+        !(checkingColRight == 0 || checkingRowRight == 7)
       ) {
         checkingRowRight++;
         checkingColRight--;
@@ -279,7 +300,7 @@ const possibilitesForBishop = (atPos) => {
       }
     }
   }
-  // check right
+  // check left
   if (atRow > 0 && atCol < 7) {
     checkingRowLeft = atRow - 1;
     checkingColLeft = atCol + 1;
@@ -293,7 +314,7 @@ const possibilitesForBishop = (atPos) => {
         : 0;
       if (
         board[checkingRowLeft][checkingColLeft] == " " &&
-        !(checkingColLeft == 7 && checkingRowLeft == 0)
+        !(checkingColLeft == 7 || checkingRowLeft == 0)
       ) {
         checkingRowLeft--;
         checkingColLeft++;
@@ -305,7 +326,7 @@ const possibilitesForBishop = (atPos) => {
   }
 
   return possibilityArray;
-}; // <---------
+};
 const possibilitesForQueen = (atPos) => {
   try {
     if (getPieceAtPos(atPos).toUpperCase() != "Q") {
@@ -314,7 +335,209 @@ const possibilitesForQueen = (atPos) => {
   } catch (err) {
     return "bad index";
   }
-  return [...possibilitesForRook(atPos), ...possibilitesForBishop(atPos)];
+  possibilityArray = [];
+
+  atRow = getIndexOfRank(atPos[1]);
+  atCol = getIndexOfFile(atPos[0].toUpperCase());
+  [
+    upBoundFoundStraight,
+    downBoundFoundStraight,
+    rightBoundFoundStraight,
+    leftBoundFoundStraight,
+  ] = [0, 0, 0, 0];
+  // check vertically up
+  if (atRow > 0) {
+    checkingRowUpStraight = atRow - 1;
+    checkingColUpStraight = atCol;
+    while (!upBoundFoundStraight) {
+      checkColorAtPos(atPos) !=
+      checkColorAtIndex(checkingRowUpStraight, checkingColUpStraight)
+        ? (possibilityArray = [
+            ...possibilityArray,
+            `${checkingRowUpStraight + "" + checkingColUpStraight}`,
+          ])
+        : 0;
+      if (
+        board[checkingRowUpStraight][checkingColUpStraight] == " " &&
+        checkingRowUpStraight != 0
+      ) {
+        checkingRowUpStraight--;
+      } else {
+        upBoundFoundStraight;
+        break;
+      }
+    }
+  }
+  // check vertically down
+  if (atRow < 7) {
+    checkingRowDownStraight = atRow + 1;
+    checkingColDownStraight = atCol;
+    while (!downBoundFoundStraight) {
+      checkColorAtPos(atPos) !=
+      checkColorAtIndex(checkingRowDownStraight, checkingColDownStraight)
+        ? (possibilityArray = [
+            ...possibilityArray,
+            `${checkingRowDownStraight + "" + checkingColDownStraight}`,
+          ])
+        : 0;
+      if (
+        board[checkingRowDownStraight][checkingColDownStraight] == " " &&
+        checkingRowDownStraight != 7
+      ) {
+        checkingRowDownStraight++;
+      } else {
+        downBoundFoundStraight;
+        break;
+      }
+    }
+  }
+  // check right
+
+  if (atCol > 0) {
+    checkingRowRightStraight = atRow;
+    checkingColRightStraight = atCol - 1;
+    while (!rightBoundFoundStraight) {
+      checkColorAtPos(atPos) !=
+      checkColorAtIndex(checkingRowRightStraight, checkingColRightStraight)
+        ? (possibilityArray = [
+            ...possibilityArray,
+            `${checkingRowRightStraight + "" + checkingColRightStraight}`,
+          ])
+        : 0;
+      if (
+        board[checkingRowRightStraight][checkingColRightStraight] == " " &&
+        checkingColRightStraight != 0
+      ) {
+        checkingColRightStraight--;
+      } else {
+        rightBoundFoundStraight;
+        break;
+      }
+    }
+  }
+  // check left
+  if (atCol < 7) {
+    checkingRowLeftStraight = atRow;
+    checkingColLeftStraight = atCol + 1;
+    while (!leftBoundFoundStraight) {
+      checkColorAtPos(atPos) !=
+      checkColorAtIndex(checkingRowLeftStraight, checkingColLeftStraight)
+        ? (possibilityArray = [
+            ...possibilityArray,
+            `${checkingRowLeftStraight + "" + checkingColLeftStraight}`,
+          ])
+        : 0;
+      if (
+        board[checkingRowLeftStraight][checkingColLeftStraight] == " " &&
+        checkingColLeftStraight != 7
+      ) {
+        checkingColLeftStraight++;
+      } else {
+        leftBoundFoundStraight;
+        break;
+      }
+    }
+  }
+  [upBoundFound, downBoundFound, rightBoundFound, leftBoundFound] = [
+    0, 0, 0, 0,
+  ];
+  // check vertically up
+  if (atRow > 0 && atCol > 0) {
+    checkingRowUp = atRow - 1;
+    checkingColUp = atCol - 1;
+    while (!upBoundFound) {
+      checkColorAtPos(atPos) != checkColorAtIndex(checkingRowUp, checkingColUp)
+        ? (possibilityArray = [
+            ...possibilityArray,
+            `${checkingRowUp + "" + checkingColUp}`,
+          ])
+        : 0;
+      if (
+        board[checkingRowUp][checkingColUp] == " " &&
+        !(checkingRowUp == 0 || checkingColUp == 0)
+      ) {
+        checkingRowUp--;
+        checkingColUp--;
+      } else {
+        upBoundFound;
+        break;
+      }
+    }
+  }
+  // check vertically down
+  if (atRow < 7 && atCol < 7) {
+    checkingRowDown = atRow + 1;
+    checkingColDown = atCol + 1;
+    while (!downBoundFound) {
+      checkColorAtPos(atPos) !=
+      checkColorAtIndex(checkingRowDown, checkingColDown)
+        ? (possibilityArray = [
+            ...possibilityArray,
+            `${checkingRowDown + "" + checkingColDown}`,
+          ])
+        : 0;
+      if (
+        board[checkingRowDown][checkingColDown] == " " &&
+        !(checkingRowDown == 7 || checkingColDown == 7)
+      ) {
+        checkingRowDown++;
+        checkingColDown++;
+      } else {
+        downBoundFound;
+        break;
+      }
+    }
+  }
+  // check right
+  if (atRow < 7 && atCol > 0) {
+    checkingRowRight = atRow + 1;
+    checkingColRight = atCol - 1;
+    while (!rightBoundFound) {
+      checkColorAtPos(atPos) !=
+      checkColorAtIndex(checkingRowRight, checkingColRight)
+        ? (possibilityArray = [
+            ...possibilityArray,
+            `${checkingRowRight + "" + checkingColRight}`,
+          ])
+        : 0;
+      if (
+        board[checkingRowRight][checkingColRight] == " " &&
+        !(checkingColRight == 0 || checkingRowRight == 7)
+      ) {
+        checkingRowRight++;
+        checkingColRight--;
+      } else {
+        rightBoundFound;
+        break;
+      }
+    }
+  }
+  // check left
+  if (atRow > 0 && atCol < 7) {
+    checkingRowLeft = atRow - 1;
+    checkingColLeft = atCol + 1;
+    while (!leftBoundFound) {
+      checkColorAtPos(atPos) !=
+      checkColorAtIndex(checkingRowLeft, checkingColLeft)
+        ? (possibilityArray = [
+            ...possibilityArray,
+            `${checkingRowLeft + "" + checkingColLeft}`,
+          ])
+        : 0;
+      if (
+        board[checkingRowLeft][checkingColLeft] == " " &&
+        !(checkingColLeft == 7 || checkingRowLeft == 0)
+      ) {
+        checkingRowLeft--;
+        checkingColLeft++;
+      } else {
+        leftBoundFound;
+        break;
+      }
+    }
+  }
+
+  return possibilityArray;
 };
 const possibilitesForKnight = (atPos) => {
   possibilityArray = [];
@@ -498,7 +721,7 @@ const getPossibilitesAtPos = (atPos) => {
       piecePossibilities = possibilitesForRook(atPos);
       break;
     case "B":
-      piecePossibilities = possibilitesForQueen(atPos);
+      piecePossibilities = possibilitesForBishop(atPos);
       break;
     case "N":
       piecePossibilities = possibilitesForKnight(atPos);
@@ -534,27 +757,29 @@ const getPossibilitesAtIndex = (row, col) => {
       : col == 7
       ? "H" + (row + 1)
       : Null;
-  console.log(atPos);
 
   return getPossibilitesAtPos(atPos);
 };
-console.log(possibilitesForPawn("a1"));
-console.log(possibilitesForPawn("a2"));
-console.log(possibilitesForPawn("b1"));
-console.log(possibilitesForPawn("a8"));
-console.log(possibilitesForPawn("b8"));
-console.log(possibilitesForPawn("b7"));
-console.log(possibilitesForPawn("f2"));
-console.log(possibilitesForPawn("h8"));
-console.log(possibilitesForPawn("h1"));
-console.log(possibilitesForPawn("h4"));
-console.log(possibilitesForPawn("e4"));
 
 // OUTPUT FUNCTIONS
 const showBoard = () => {
   boardString = `  0 1 2 3 4 5 6 7 \n`;
   i = 0;
   board.map((row) => {
+    boardString += `${i + 1}`;
+    row.map((element) => {
+      boardString += `|${element}`;
+    });
+    boardString += `|${i}\n`;
+    i++;
+  });
+  boardString += `  A B C D E F G H \n`;
+  console.log(boardString);
+};
+const showBoardCustom = (boardArray) => {
+  boardString = `  0 1 2 3 4 5 6 7 \n`;
+  i = 0;
+  boardArray.map((row) => {
     boardString += `${i + 1}`;
     row.map((element) => {
       boardString += `|${element}`;
@@ -575,37 +800,31 @@ const movePiece = (fromPos, toPos) => {
     board[toRow][toCol] = board[fromRow][fromCol];
     board[fromRow][fromCol] = " ";
   }
-  //try {
-  //  board[fromRow][fromCol] != " "
-  //    ? (board[toRow][toCol] = board[fromRow][fromCol])
-  //    : 0;
-  //} catch (err) {
-  //  return 0;
-  //}
 };
+const getPossibilityForAll = (color) => {
+  allPossible = [];
 
+  i = 0;
+  board.map((row) => {
+    j = 0;
+    row.map((element) => {
+      checkColorAtIndex(i, j) == color
+        ? (allPossible = [
+            ...allPossible,
+            {
+              pieceType: element,
+              position: i + "" + j,
+              possibilites: getPossibilitesAtIndex(i, j),
+            },
+          ])
+        : 0;
+      j++;
+    });
+    i++;
+  });
+
+  return allPossible;
+};
 showBoard();
-
-//const getPossibilityForAll = (color) => {
-//  allPossible = [];
-//
-//  board.map((row) => {
-//    row.map((element) => {
-//      checkColorAtIndex(board.indexOf(row), row.indexOf(element)) == color
-//        ? (allPossible = [
-//            ...allPossible,
-//            {
-//              pieceType: element,
-//              position: board.indexOf(row) + "" + row.indexOf(element),
-//              possibilites: getPossibilitesAtIndex(
-//                board.indexOf(row),
-//                row.indexOf(element)
-//              ),
-//            },
-//          ])
-//        : 0;
-//    });
-//  });
-//
-//  return allPossible;
-//}; // TODO
+//console.log(getPossibilityForAll("black"));
+// for black to play, check all possibilities of white if black plays something, if there is a check to black king, remove that possibility
